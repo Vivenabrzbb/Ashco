@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
 import { useCart } from './CartProvider';
-import { formatGBP, type Product } from '@/lib/types';
+import { formatGBP, TAG_LABELS, type Product } from '@/lib/types';
 
 export function ProductCard({ product }: { product: Product }) {
-  const { addItem } = useCart();
-  const [added, setAdded] = useState(false);
+  const { lines, addItem, setQuantity } = useCart();
+
+  const inCart = lines.find((l) => l.product_id === product.id);
+  const quantity = inCart?.quantity ?? 0;
 
   function handleAdd() {
     addItem({
@@ -14,13 +15,11 @@ export function ProductCard({ product }: { product: Product }) {
       name: product.name,
       price_pence: product.price_pence,
     });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1200);
   }
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-panel transition hover:border-signal/50">
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-line">
+      <div className="relative aspect-square w-full overflow-hidden bg-line">
         {product.image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -33,6 +32,13 @@ export function ProductCard({ product }: { product: Product }) {
             <span className="font-display text-sm uppercase tracking-widest">No image</span>
           </div>
         )}
+
+        {product.tag !== 'none' && (
+          <div className="absolute left-3 top-3 rounded-full bg-signal px-3 py-1 text-xs font-bold uppercase tracking-wide text-ink">
+            {TAG_LABELS[product.tag]}
+          </div>
+        )}
+
         {!product.in_stock && (
           <div className="absolute right-3 top-3 rounded-full bg-ink/80 px-3 py-1 text-xs font-bold uppercase tracking-wide text-ash">
             Out of stock
@@ -48,13 +54,39 @@ export function ProductCard({ product }: { product: Product }) {
           <span className="font-display text-xl font-extrabold text-signal">
             {formatGBP(product.price_pence)}
           </span>
-          <button
-            onClick={handleAdd}
-            disabled={!product.in_stock}
-            className="rounded-full bg-signal px-4 py-2 text-sm font-bold text-ink transition hover:bg-white disabled:cursor-not-allowed disabled:bg-line disabled:text-ash"
-          >
-            {added ? 'Added ✓' : 'Add to cart'}
-          </button>
+
+          {!product.in_stock ? (
+            <span className="rounded-full bg-line px-4 py-2 text-sm font-bold text-ash">
+              Unavailable
+            </span>
+          ) : quantity === 0 ? (
+            <button
+              onClick={handleAdd}
+              className="rounded-full bg-signal px-4 py-2 text-sm font-bold text-ink transition hover:bg-white"
+            >
+              Add to cart
+            </button>
+          ) : (
+            <div className="flex items-center gap-3 rounded-full border border-signal bg-signal/10 px-1 py-1">
+              <button
+                onClick={() => setQuantity(product.id, quantity - 1)}
+                className="flex h-7 w-7 items-center justify-center rounded-full text-lg font-bold text-signal hover:bg-signal/20"
+                aria-label={`Decrease quantity of ${product.name}`}
+              >
+                −
+              </button>
+              <span className="min-w-[1.25rem] text-center font-display font-bold text-paper">
+                {quantity}
+              </span>
+              <button
+                onClick={() => setQuantity(product.id, quantity + 1)}
+                className="flex h-7 w-7 items-center justify-center rounded-full text-lg font-bold text-signal hover:bg-signal/20"
+                aria-label={`Increase quantity of ${product.name}`}
+              >
+                +
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
