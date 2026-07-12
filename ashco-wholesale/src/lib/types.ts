@@ -1,3 +1,11 @@
+export type ProductTag = 'none' | 'clearance' | 'trending' | 'new';
+
+export const TAG_LABELS: Record<Exclude<ProductTag, 'none'>, string> = {
+  clearance: 'Clearance',
+  trending: 'Trending',
+  new: 'New in',
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -5,6 +13,7 @@ export type Product = {
   price_pence: number;
   image_url: string | null;
   in_stock: boolean;
+  tag: ProductTag;
   created_at: string;
 };
 
