@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { Header } from '@/components/Header';
-import { ProductCard } from '@/components/ProductCard';
+import { StoreFront } from '@/components/StoreFront';
 import type { Product } from '@/lib/types';
 
 export const revalidate = 0;
@@ -35,19 +35,7 @@ export default async function HomePage() {
 
       <section className="px-6 py-16">
         <div className="mx-auto max-w-6xl">
-          <h2 className="mb-8 font-display text-2xl font-bold text-paper">Available stock</h2>
-
-          {list.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-line py-20 text-center text-ash">
-              No products listed yet. Check back shortly.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {list.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          )}
+          <StoreFront products={list} />
         </div>
       </section>
 
