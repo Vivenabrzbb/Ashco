@@ -2,9 +2,16 @@
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { formatGBP, type Product } from '@/lib/types';
+import { formatGBP, type Product, type ProductTag } from '@/lib/types';
 
-const emptyForm = { name: '', description: '', price: '', image_url: '', in_stock: true };
+const emptyForm = {
+  name: '',
+  description: '',
+  price: '',
+  image_url: '',
+  in_stock: true,
+  tag: 'none' as ProductTag,
+};
 
 export function ProductsAdmin({ initialProducts }: { initialProducts: Product[] }) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -22,6 +29,7 @@ export function ProductsAdmin({ initialProducts }: { initialProducts: Product[] 
       price: (product.price_pence / 100).toString(),
       image_url: product.image_url || '',
       in_stock: product.in_stock,
+      tag: product.tag || 'none',
     });
   }
 
@@ -71,6 +79,7 @@ export function ProductsAdmin({ initialProducts }: { initialProducts: Product[] 
       price_pence: Math.round(priceNum * 100),
       image_url: form.image_url || null,
       in_stock: form.in_stock,
+      tag: form.tag,
     };
 
     const url = editingId ? `/api/admin/products/${editingId}` : '/api/admin/products';
@@ -183,6 +192,20 @@ export function ProductsAdmin({ initialProducts }: { initialProducts: Product[] 
               className="h-4 w-4 accent-signal"
             />
             <span className="text-sm text-ash">In stock</span>
+          </label>
+
+          <label className="block">
+            <span className="mb-1 block text-sm text-ash">Badge</span>
+            <select
+              value={form.tag}
+              onChange={(e) => setForm((p) => ({ ...p, tag: e.target.value as ProductTag }))}
+              className="w-full rounded-lg border border-line bg-ink px-3 py-2 text-paper focus:border-signal focus:outline-none"
+            >
+              <option value="none">None</option>
+              <option value="clearance">Clearance</option>
+              <option value="trending">Trending</option>
+              <option value="new">New</option>
+            </select>
           </label>
 
           {error && (
