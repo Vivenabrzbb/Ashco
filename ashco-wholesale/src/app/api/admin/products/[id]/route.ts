@@ -18,6 +18,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       price_pence: body.price_pence,
       image_url: body.image_url,
       in_stock: body.in_stock,
+      tag: body.tag,
     })
     .eq('id', id)
     .select()
