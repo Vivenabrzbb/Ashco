@@ -17,6 +17,7 @@ export async function POST(request: Request) {
       price_pence: body.price_pence,
       image_url: body.image_url || null,
       in_stock: body.in_stock ?? true,
+      tag: body.tag || 'none',
     })
     .select()
     .single();
