@@ -1,10 +1,22 @@
-export type ProductTag = 'none' | 'clearance' | 'trending' | 'new';
+export type ProductTag = 'none' | 'clearance' | 'trending' | 'new' | 'offer';
 
 export const TAG_LABELS: Record<Exclude<ProductTag, 'none'>, string> = {
   clearance: 'Clearance',
   trending: 'Trending',
   new: 'New in',
+  offer: 'Offer',
 };
+
+// Suggested categories shown in the admin dropdown/autocomplete — not a hard limit,
+// you can type any category name and it'll be remembered.
+export const SUGGESTED_CATEGORIES = [
+  'Soft Drinks',
+  'Snacks',
+  'Confectionery',
+  'Household',
+  'Grocery',
+  'Frozen',
+];
 
 export type Product = {
   id: string;
@@ -14,6 +26,7 @@ export type Product = {
   image_url: string | null;
   in_stock: boolean;
   tag: ProductTag;
+  category: string;
   created_at: string;
 };
 
