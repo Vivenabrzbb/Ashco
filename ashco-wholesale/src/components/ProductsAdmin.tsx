@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { formatGBP, type Product, type ProductTag } from '@/lib/types';
+import { formatGBP, SUGGESTED_CATEGORIES, type Product, type ProductTag } from '@/lib/types';
 
 const emptyForm = {
   name: '',
@@ -11,6 +11,7 @@ const emptyForm = {
   image_url: '',
   in_stock: true,
   tag: 'none' as ProductTag,
+  category: '',
 };
 
 export function ProductsAdmin({ initialProducts }: { initialProducts: Product[] }) {
@@ -30,6 +31,7 @@ export function ProductsAdmin({ initialProducts }: { initialProducts: Product[] 
       image_url: product.image_url || '',
       in_stock: product.in_stock,
       tag: product.tag || 'none',
+      category: product.category || '',
     });
   }
 
@@ -80,6 +82,7 @@ export function ProductsAdmin({ initialProducts }: { initialProducts: Product[] 
       image_url: form.image_url || null,
       in_stock: form.in_stock,
       tag: form.tag,
+      category: form.category.trim() || 'Uncategorised',
     };
 
     const url = editingId ? `/api/admin/products/${editingId}` : '/api/admin/products';
@@ -170,6 +173,24 @@ export function ProductsAdmin({ initialProducts }: { initialProducts: Product[] 
           </label>
 
           <label className="block">
+            <span className="mb-1 block text-sm text-ash">Category</span>
+            <input
+              list="category-suggestions"
+              value={form.category}
+              onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}
+              placeholder="e.g. Soft Drinks"
+              className="w-full rounded-lg border border-line bg-ink px-3 py-2 text-paper focus:border-signal focus:outline-none"
+            />
+            <datalist id="category-suggestions">
+              {Array.from(new Set([...SUGGESTED_CATEGORIES, ...products.map((p) => p.category)]))
+                .filter(Boolean)
+                .map((cat) => (
+                  <option key={cat} value={cat} />
+                ))}
+            </datalist>
+          </label>
+
+          <label className="block">
             <span className="mb-1 block text-sm text-ash">Image</span>
             <input
               type="file"
@@ -202,6 +223,7 @@ export function ProductsAdmin({ initialProducts }: { initialProducts: Product[] 
               className="w-full rounded-lg border border-line bg-ink px-3 py-2 text-paper focus:border-signal focus:outline-none"
             >
               <option value="none">None</option>
+              <option value="offer">Offer</option>
               <option value="clearance">Clearance</option>
               <option value="trending">Trending</option>
               <option value="new">New</option>
@@ -254,7 +276,9 @@ export function ProductsAdmin({ initialProducts }: { initialProducts: Product[] 
               </div>
               <div className="flex-1">
                 <p className="font-display font-bold text-paper">{product.name}</p>
-                <p className="text-sm text-ash">{formatGBP(product.price_pence)}</p>
+                <p className="text-sm text-ash">
+                  {formatGBP(product.price_pence)} · {product.category || 'Uncategorised'}
+                </p>
               </div>
               <button
                 onClick={() => toggleStock(product)}
