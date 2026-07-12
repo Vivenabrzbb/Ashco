@@ -1,0 +1,48 @@
+'use client';
+
+import { useMemo, useState } from 'react';
+import { ProductCard } from './ProductCard';
+import type { Product } from '@/lib/types';
+
+export function StoreFront({ products }: { products: Product[] }) {
+  const [query, setQuery] = useState('');
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return products;
+    return products.filter(
+      (p) => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)
+    );
+  }, [products, query]);
+
+  return (
+    <div>
+      <div className="mb-8 flex items-center justify-between gap-4">
+        <h2 className="font-display text-2xl font-bold text-paper">Available stock</h2>
+        <div className="relative w-full max-w-xs">
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search products…"
+            className="w-full rounded-full border border-line bg-panel px-4 py-2 text-sm text-paper placeholder:text-ash focus:border-signal focus:outline-none"
+          />
+        </div>
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-line py-20 text-center text-ash">
+          {products.length === 0
+            ? 'No products listed yet. Check back shortly.'
+            : `No products match "${query}".`}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
