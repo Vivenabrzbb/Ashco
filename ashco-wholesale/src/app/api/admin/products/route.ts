@@ -18,6 +18,7 @@ export async function POST(request: Request) {
       image_url: body.image_url || null,
       in_stock: body.in_stock ?? true,
       tag: body.tag || 'none',
+      category: body.category || 'Uncategorised',
     })
     .select()
     .single();
