@@ -46,9 +46,9 @@ export function ProductCard({ product }: { product: Product }) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 p-5">
-        <span className="text-xs font-medium uppercase tracking-wide text-ash">
+      <span className="text-xs font-medium uppercase tracking-wide text-ash">
           {product.category || 'Uncategorised'}
+          {product.subcategory ? ` · ${product.subcategory}` : ''}
         </span>
         <h3 className="-mt-1 font-display text-lg font-bold text-paper">{product.name}</h3>
         <p className="flex-1 text-sm leading-relaxed text-ash">{product.description}</p>
