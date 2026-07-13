@@ -19,6 +19,7 @@ export async function POST(request: Request) {
       in_stock: body.in_stock ?? true,
       tag: body.tag || 'none',
       category: body.category || 'Uncategorised',
+      subcategory: body.subcategory || null,
     })
     .select()
     .single();
