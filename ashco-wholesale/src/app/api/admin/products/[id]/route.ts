@@ -20,6 +20,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       in_stock: body.in_stock,
       tag: body.tag || 'none',
       category: body.category || 'Uncategorised',
+      subcategory: body.subcategory || null,
     })
     .eq('id', id)
     .select()
