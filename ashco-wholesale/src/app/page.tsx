@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { createClient } from '@/lib/supabase/server';
 import { Header } from '@/components/Header';
 import { StoreFront } from '@/components/StoreFront';
@@ -35,7 +36,9 @@ export default async function HomePage() {
 
       <section className="px-6 py-16">
         <div className="mx-auto max-w-6xl">
-          <StoreFront products={list} />
+          <Suspense fallback={null}>
+            <StoreFront products={list} />
+          </Suspense>
         </div>
       </section>
 
