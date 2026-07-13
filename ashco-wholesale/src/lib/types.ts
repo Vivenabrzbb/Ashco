@@ -13,10 +13,24 @@ export const SUGGESTED_CATEGORIES = [
   'Soft Drinks',
   'Snacks',
   'Confectionery',
+  'American Products',
   'Household',
   'Grocery',
   'Frozen',
+  'Pet Care',
 ];
+
+// Optional suggested sub-categories per category, shown in admin once a category is picked.
+// Purely a convenience list — any subcategory text is allowed, this just speeds up entry.
+export const SUGGESTED_SUBCATEGORIES: Record<string, string[]> = {
+  'Soft Drinks': ['Coca-Cola', 'Pepsi', 'Energy Drinks', 'Water', 'Juice'],
+  Snacks: ['Crisps', 'Nuts', 'Popcorn'],
+  Confectionery: ['Chocolate', 'Sweets', 'Gum'],
+  'American Products': ['Candy', 'Soda', 'Snacks'],
+  Household: ['Cleaning', 'Toiletries', 'Batteries', 'Pet Care'],
+  Grocery: ['Tinned Goods', 'Sauces', 'Baking'],
+  Frozen: ['Ice Cream', 'Ready Meals'],
+};
 
 export type Product = {
   id: string;
@@ -27,6 +41,7 @@ export type Product = {
   in_stock: boolean;
   tag: ProductTag;
   category: string;
+  subcategory: string | null;
   created_at: string;
 };
 
