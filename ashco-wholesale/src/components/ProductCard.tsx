@@ -40,8 +40,7 @@ export function ProductCard({ product }: { product: Product }) {
         )}
 
         {!product.in_stock && (
-          <div className="absolute right-3 top-3 rounded-full bg-ink/80 px-3 py-1 text-xs font-bold uppercase tracking-wide text-ash">
-            Out of stock
+         <div className="absolute right-3 top-3 rounded-full bg-paper/85 px-3 py-1 text-xs font-bold uppercase tracking-wide text-ink">
           </div>
         )}
       </div>
