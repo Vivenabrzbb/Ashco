@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 * {
-  scrollbar-color: #FF6000 #141414;
+  scrollbar-color: #FF6000 #F7F6F3;
 }
 
 body {
