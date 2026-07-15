@@ -5,11 +5,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: '#0A0A0A',
-        panel: '#141414',
-        line: '#262626',
-        paper: '#F5F3EE',
-        ash: '#8A8A8A',
+        ink: '#FFFFFF',
+        panel: '#F7F6F3',
+        line: '#E4E1D8',
+        paper: '#141414',
+        ash: '#6B6862',
         signal: '#FF6000',
         signalDim: '#B84600',
       },
