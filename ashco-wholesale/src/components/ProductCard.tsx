@@ -40,12 +40,14 @@ export function ProductCard({ product }: { product: Product }) {
         )}
 
         {!product.in_stock && (
-         <div className="absolute right-3 top-3 rounded-full bg-paper/85 px-3 py-1 text-xs font-bold uppercase tracking-wide text-ink">
+          <div className="absolute right-3 top-3 rounded-full bg-paper/85 px-3 py-1 text-xs font-bold uppercase tracking-wide text-ink">
+            Out of stock
           </div>
         )}
       </div>
 
-      <span className="text-xs font-medium uppercase tracking-wide text-ash">
+      <div className="flex flex-1 flex-col gap-2 p-5">
+        <span className="text-xs font-medium uppercase tracking-wide text-ash">
           {product.category || 'Uncategorised'}
           {product.subcategory ? ` · ${product.subcategory}` : ''}
         </span>
