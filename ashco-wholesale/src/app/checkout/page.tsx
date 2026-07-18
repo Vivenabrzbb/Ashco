@@ -179,14 +179,15 @@ export default function CheckoutPage() {
       </div>
 
       <style>{`
-        .input {
+       .input {
           width: 100%;
-          background: #141414;
-          border: 1px solid #262626;
+          background: #FFFFFF;
+          border: 1px solid #E4E1D8;
           border-radius: 0.75rem;
           padding: 0.75rem 1rem;
-          color: #F5F3EE;
+          color: #141414;
         }
+        
         .input:focus {
           outline: 2px solid #FF6000;
           border-color: #FF6000;
