@@ -16,9 +16,9 @@ export function TrendingSection({ products }: { products: Product[] }) {
           <h2 className="font-display text-2xl font-bold text-paper">Trending now</h2>
         </div>
 
-        <div className="-mx-6 flex gap-6 overflow-x-auto px-6 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
+       <div className="-mx-6 flex gap-6 overflow-x-auto px-6 pb-2">
           {trending.map((product) => (
-            <div key={product.id} className="w-64 flex-shrink-0 sm:w-auto">
+            <div key={product.id} className="w-64 flex-shrink-0">
               <ProductCard product={product} />
             </div>
           ))}
