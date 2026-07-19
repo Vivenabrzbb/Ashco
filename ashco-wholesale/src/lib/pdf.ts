@@ -2,39 +2,41 @@ import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { formatGBP, type Order, type OrderItem } from './types';
 
 const BRAND_ORANGE = rgb(1, 0.376, 0); // #FF6000
-const INK = rgb(0.04, 0.04, 0.04);
-const GREY = rgb(0.45, 0.45, 0.45);
-const WHITE = rgb(1, 1, 1);
-const LIGHT_LINE = rgb(0.88, 0.88, 0.88);
+const INK = rgb(0.06, 0.06, 0.06);
+const GREY = rgb(0.4, 0.4, 0.4);
+const LIGHT_LINE = rgb(0.85, 0.85, 0.85);
 
 export async function generateInvoicePdf(order: Order, items: OrderItem[]): Promise<Uint8Array> {
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage([595.28, 841.89]); // A4
   const { width, height } = page.getSize();
-  const margin = 50;
+  const margin = 54;
 
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
   let y = height - 60;
 
-  // --- Top: business name (left) + invoice number (right) --------------
-  page.drawText('ASHCO WHOLESALE', { x: margin, y, size: 24, font: bold, color: INK });
+  // --- Top-left logo: ASH (ink) + CO (orange), WHOLESALE below --------
+  const ashWidth = bold.widthOfTextAtSize('ASH', 26);
+  page.drawText('ASH', { x: margin, y, size: 26, font: bold, color: INK });
+  page.drawText('CO', { x: margin + ashWidth, y, size: 26, font: bold, color: BRAND_ORANGE });
+  page.drawText('WHOLESALE', { x: margin, y: y - 24, size: 13, font: bold, color: INK });
 
-  const invoiceLabel = `Invoice ${order.invoice_number}`;
-  const invoiceLabelWidth = bold.widthOfTextAtSize(invoiceLabel, 20);
-  page.drawText(invoiceLabel, {
-    x: width - margin - invoiceLabelWidth,
-    y: y + 4,
-    size: 20,
-    font: bold,
-    color: INK,
+  // --- Top-right: Invoice heading + meta -------------------------------
+  const rightColX = width - margin - 200;
+  page.drawText('Invoice', { x: rightColX, y: y + 4, size: 24, font: bold, color: INK });
+  y -= 12;
+  page.drawText(`Invoice No. ${order.invoice_number}`, {
+    x: rightColX,
+    y: y - 20,
+    size: 10,
+    font,
+    color: GREY,
   });
-  const subLabel = 'Order confirmation';
-  const subLabelWidth = font.widthOfTextAtSize(subLabel, 10);
-  page.drawText(subLabel, {
-    x: width - margin - subLabelWidth,
-    y: y - 14,
+  page.drawText(`Date: ${new Date(order.created_at).toLocaleDateString('en-GB')}`, {
+    x: rightColX,
+    y: y - 34,
     size: 10,
     font,
     color: GREY,
@@ -42,67 +44,32 @@ export async function generateInvoicePdf(order: Order, items: OrderItem[]): Prom
 
   y -= 70;
 
-  // --- BILL TO block (left) ----------------------------------------------
-  page.drawText('BILL TO', { x: margin, y, size: 9, font: bold, color: INK });
+  page.drawText('Billed to:', { x: rightColX, y, size: 10, font: bold, color: INK });
   y -= 16;
-  page.drawText(order.customer_name, { x: margin, y, size: 11, font: bold, color: INK });
-  y -= 15;
-  const addressLines = [order.address_line1, order.address_line2 || '', order.city, order.postcode].filter(
+  page.drawText(order.customer_name, { x: rightColX, y, size: 10, font, color: GREY });
+  y -= 14;
+  if (order.customer_phone) {
+    page.drawText(order.customer_phone, { x: rightColX, y, size: 10, font, color: GREY });
+    y -= 14;
+  }
+  const addressLines = [order.address_line1, order.address_line2 || '', `${order.city}, ${order.postcode}`].filter(
     Boolean
   );
   for (const line of addressLines) {
-    page.drawText(line, { x: margin, y, size: 10, font, color: GREY });
+    page.drawText(line, { x: rightColX, y, size: 10, font, color: GREY, maxWidth: 200 });
     y -= 14;
   }
-  page.drawText(order.customer_email, { x: margin, y, size: 10, font, color: GREY });
 
-  // reset y for the banded strip below both blocks
-  y -= 40;
+  y -= 30;
 
-  // --- Banded strip: Invoice No / Order date / Delivery to / Total due ---
-  const stripHeight = 56;
-  const stripY = y - stripHeight;
-  const stripWidth = width - margin * 2;
-  const colWidth = stripWidth / 4;
-
-  // orange background for first 3 columns
-  page.drawRectangle({
-    x: margin,
-    y: stripY,
-    width: colWidth * 3,
-    height: stripHeight,
-    color: BRAND_ORANGE,
-  });
-  // dark background for the total column
-  page.drawRectangle({
-    x: margin + colWidth * 3,
-    y: stripY,
-    width: colWidth,
-    height: stripHeight,
-    color: INK,
-  });
-
-  function stripCell(label: string, value: string, colIndex: number, valueColor = WHITE) {
-    const cx = margin + colWidth * colIndex + 14;
-    page.drawText(label, { x: cx, y: stripY + 34, size: 8, font: bold, color: WHITE });
-    page.drawText(value, { x: cx, y: stripY + 14, size: 13, font: bold, color: valueColor });
-  }
-
-  stripCell('INVOICE NO.', order.invoice_number, 0);
-  stripCell('ORDER DATE', new Date(order.created_at).toLocaleDateString('en-GB'), 1);
-  stripCell('POSTCODE', order.postcode, 2);
-  stripCell('TOTAL DUE', formatGBP(order.subtotal_pence), 3, BRAND_ORANGE);
-
-  y = stripY - 40;
-
-  // --- Item table header ---------------------------------------------
+  // --- Item table ---------------------------------------------------------
   page.drawText('DESCRIPTION', { x: margin, y, size: 9, font: bold, color: INK });
   page.drawText('QTY', { x: width - margin - 220, y, size: 9, font: bold, color: INK });
   page.drawText('UNIT PRICE', { x: width - margin - 160, y, size: 9, font: bold, color: INK });
   page.drawText('AMOUNT', { x: width - margin - 70, y, size: 9, font: bold, color: INK });
   y -= 8;
   page.drawLine({ start: { x: margin, y }, end: { x: width - margin, y }, thickness: 1, color: INK });
-  y -= 22;
+  y -= 24;
 
   for (const item of items) {
     const lineTotal = item.unit_price_pence * item.quantity;
@@ -116,57 +83,84 @@ export async function generateInvoicePdf(order: Order, items: OrderItem[]): Prom
       color: INK,
     });
     page.drawText(formatGBP(lineTotal), { x: width - margin - 70, y, size: 10, font, color: INK });
-    y -= 12;
-    page.drawLine({
-      start: { x: margin, y },
-      end: { x: width - margin, y },
-      thickness: 0.5,
-      color: LIGHT_LINE,
-    });
-    y -= 20;
+    y -= 28;
 
-    if (y < 140) y = height - 60; // simple overflow guard for very long orders
+    if (y < 160) y = height - 60; // overflow guard for very long orders
   }
 
   y -= 6;
+  page.drawLine({ start: { x: margin, y }, end: { x: width - margin, y }, thickness: 1, color: LIGHT_LINE });
+  y -= 30;
 
-  // --- Subtotal ----------------------------------------------------------
-  page.drawText('Subtotal:', { x: width - margin - 190, y, size: 11, font: bold, color: INK });
+  // --- Sub-total / Total (right-aligned), note on the left ----------------
+  const noteY = y;
+  page.drawText('We will contact you to confirm this order', {
+    x: margin,
+    y: noteY,
+    size: 9,
+    font,
+    color: GREY,
+  });
+  page.drawText('and arrange payment before dispatch.', {
+    x: margin,
+    y: noteY - 13,
+    size: 9,
+    font,
+    color: GREY,
+  });
+
+  page.drawText('Sub-Total', { x: width - margin - 190, y, size: 10, font, color: GREY });
   page.drawText(formatGBP(order.subtotal_pence), {
     x: width - margin - 70,
     y,
-    size: 11,
-    font: bold,
+    size: 10,
+    font,
     color: INK,
   });
   y -= 20;
-  page.drawText('Total (GBP):', { x: width - margin - 190, y, size: 13, font: bold, color: INK });
+  page.drawLine({
+    start: { x: width - margin - 190, y: y + 8 },
+    end: { x: width - margin, y: y + 8 },
+    thickness: 0.5,
+    color: LIGHT_LINE,
+  });
+  page.drawText('Total', { x: width - margin - 190, y, size: 12, font: bold, color: INK });
   page.drawText(formatGBP(order.subtotal_pence), {
     x: width - margin - 70,
     y,
-    size: 13,
+    size: 12,
     font: bold,
     color: BRAND_ORANGE,
   });
 
-  y -= 60;
-  page.drawText(
-    'This confirms your order. Ashco Wholesale will be in touch to confirm availability',
-    { x: margin, y, size: 9, font, color: GREY }
-  );
-  y -= 12;
-  page.drawText('and arrange payment before dispatch.', { x: margin, y, size: 9, font, color: GREY });
-
-  // --- Footer ------------------------------------------------------------
-  const footerY = 60;
+  // --- Footer: Contact | Next steps ---------------------------------------
+  const footerY = 110;
   page.drawLine({
-    start: { x: margin, y: footerY + 20 },
-    end: { x: width - margin, y: footerY + 20 },
+    start: { x: margin, y: footerY + 30 },
+    end: { x: width - margin, y: footerY + 30 },
     thickness: 1,
     color: LIGHT_LINE,
   });
-  page.drawText('Ashco Wholesale', { x: margin, y: footerY, size: 10, font: bold, color: INK });
-  page.drawText('ashcowholesale@gmail.com', { x: margin, y: footerY - 14, size: 9, font, color: GREY });
+
+  page.drawText('Contact', { x: margin, y: footerY, size: 13, font: bold, color: INK });
+  page.drawText('ashcowholesale@gmail.com', { x: margin, y: footerY - 18, size: 9, font, color: GREY });
+
+  const rightFooterX = width - margin - 220;
+  page.drawText('Next steps', { x: rightFooterX, y: footerY, size: 13, font: bold, color: INK });
+  page.drawText('We will call to confirm availability', {
+    x: rightFooterX,
+    y: footerY - 18,
+    size: 9,
+    font,
+    color: GREY,
+  });
+  page.drawText('and arrange payment before dispatch.', {
+    x: rightFooterX,
+    y: footerY - 32,
+    size: 9,
+    font,
+    color: GREY,
+  });
 
   return pdfDoc.save();
 }
