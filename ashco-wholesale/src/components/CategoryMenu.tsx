@@ -31,7 +31,12 @@ export function CategoryMenu() {
     const params = new URLSearchParams();
     params.set('category', category);
     if (subcategory) params.set('subcategory', subcategory);
-    router.push(`/?${params.toString()}`);
+    router.push(`/?${params.toString()}`, { scroll: false });
+    setOpen(false);
+  }
+
+  function goToTag(tag: string) {
+    router.push(`/?tag=${encodeURIComponent(tag)}`, { scroll: false });
     setOpen(false);
   }
 
