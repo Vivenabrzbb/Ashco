@@ -40,7 +40,6 @@ export default async function HomePage() {
           </Suspense>
         </div>
       </section>
-
       <footer className="border-t border-line px-6 py-10 text-center text-sm text-ash">
         Ashco Wholesale · ashcowholesale@gmail.com
       </footer>
