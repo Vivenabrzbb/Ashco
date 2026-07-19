@@ -20,22 +20,18 @@ export default async function HomePage() {
     <div className="min-h-screen">
       <Header />
 
-      <section className="grain border-b border-line px-6 py-20">
+      <TrendingSection products={list} />
+
+      <section className="border-b border-line px-6 py-12">
         <div className="mx-auto max-w-6xl">
-          <p className="mb-4 font-body text-sm font-medium uppercase tracking-[0.3em] text-signal">
+          <p className="mb-3 font-body text-sm font-medium uppercase tracking-[0.3em] text-signal">
             UK bulk stock
           </p>
-          <h1 className="max-w-2xl font-display text-5xl font-extrabold leading-[1.05] tracking-tight text-paper md:text-6xl">
+          <h1 className="max-w-2xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-paper md:text-5xl">
             Straightforward wholesale, no middlemen.
           </h1>
-          <p className="mt-6 max-w-xl text-base leading-relaxed text-ash">
-            Browse the current stock list, add what you need to your order, and submit your
-            delivery details. We&apos;ll confirm availability and arrange payment directly with you.
-          </p>
         </div>
       </section>
-
-      <TrendingSection products={list} />
 
       <section className="px-6 py-16">
         <div className="mx-auto max-w-6xl">
