@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { createClient } from '@/lib/supabase/server';
 import { Header } from '@/components/Header';
 import { StoreFront } from '@/components/StoreFront';
+import { TrendingSection } from '@/components/TrendingSection';
 import type { Product } from '@/lib/types';
 
 export const revalidate = 0;
@@ -33,6 +34,8 @@ export default async function HomePage() {
           </p>
         </div>
       </section>
+
+      <TrendingSection products={list} />
 
       <section className="px-6 py-16">
         <div className="mx-auto max-w-6xl">
