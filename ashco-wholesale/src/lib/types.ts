@@ -14,9 +14,13 @@ export const SUGGESTED_CATEGORIES = [
   'Snacks',
   'Confectionery',
   'American Products',
+  'American Drinks',
+  'Polish Beers',
+  'Coffee',
   'Household',
   'Grocery',
   'Frozen',
+  'Bakery',
   'Pet Care',
 ];
 
@@ -27,9 +31,13 @@ export const SUGGESTED_SUBCATEGORIES: Record<string, string[]> = {
   Snacks: ['Crisps', 'Nuts', 'Popcorn'],
   Confectionery: ['Chocolate', 'Sweets', 'Gum'],
   'American Products': ['Candy', 'Soda', 'Snacks'],
+  'American Drinks': ['Soda', 'Energy Drinks', 'Juice'],
+  'Polish Beers': ['Lager', 'Wheat Beer', 'Non-Alcoholic'],
+  Coffee: ['Instant', 'Ground', 'Beans', 'Pods'],
   Household: ['Cleaning', 'Toiletries', 'Batteries', 'Pet Care'],
   Grocery: ['Tinned Goods', 'Sauces', 'Baking'],
   Frozen: ['Ice Cream', 'Ready Meals'],
+  Bakery: ['Bread', 'Cakes', 'Pastries'],
 };
 
 export type Product = {
