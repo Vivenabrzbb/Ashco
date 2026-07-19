@@ -20,8 +20,6 @@ export default async function HomePage() {
     <div className="min-h-screen">
       <Header />
 
-      <TrendingSection products={list} />
-
       <section className="border-b border-line px-6 py-12">
         <div className="mx-auto max-w-6xl">
           <p className="mb-3 font-body text-sm font-medium uppercase tracking-[0.3em] text-signal">
