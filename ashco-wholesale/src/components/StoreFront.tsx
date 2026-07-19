@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ProductCard } from './ProductCard';
-import type { Product } from '@/lib/types';
+import { TAG_LABELS, type Product, type ProductTag } from '@/lib/types';
 
 export function StoreFront({ products }: { products: Product[] }) {
   const searchParams = useSearchParams();
@@ -12,11 +12,13 @@ export function StoreFront({ products }: { products: Product[] }) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<string>('All');
   const [subcategory, setSubcategory] = useState<string>('All');
+  const [tag, setTag] = useState<string>('All');
 
   // Sync filter state from the URL (set by the sidebar menu, or a shared link)
   useEffect(() => {
     setCategory(searchParams.get('category') || 'All');
     setSubcategory(searchParams.get('subcategory') || 'All');
+    setTag(searchParams.get('tag') || 'All');
   }, [searchParams]);
 
   const categories = useMemo(() => {
@@ -37,27 +39,41 @@ export function StoreFront({ products }: { products: Product[] }) {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return products.filter((p) => {
+      const matchesQuery =
+        !q || p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q);
+
+      if (tag !== 'All') {
+        return p.tag === tag && matchesQuery;
+      }
+
       const matchesCategory = category === 'All' || (p.category || 'Uncategorised') === category;
       const matchesSubcategory =
         subcategory === 'All' || !subcategory || p.subcategory === subcategory;
-      const matchesQuery =
-        !q || p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q);
       return matchesCategory && matchesSubcategory && matchesQuery;
     });
-  }, [products, query, category, subcategory]);
+  }, [products, query, category, subcategory, tag]);
+
+  function clearTag() {
+    setTag('All');
+    router.push('/', { scroll: false });
+  }
 
   function selectCategory(cat: string) {
     setCategory(cat);
     setSubcategory('All');
-    router.push(cat === 'All' ? '/' : `/?category=${encodeURIComponent(cat)}`);
+    setTag('All');
+    router.push(cat === 'All' ? '/' : `/?category=${encodeURIComponent(cat)}`, { scroll: false });
   }
 
   function selectSubcategory(sub: string) {
     setSubcategory(sub);
     if (sub === 'All') {
-      router.push(`/?category=${encodeURIComponent(category)}`);
+      router.push(`/?category=${encodeURIComponent(category)}`, { scroll: false });
     } else {
-      router.push(`/?category=${encodeURIComponent(category)}&subcategory=${encodeURIComponent(sub)}`);
+      router.push(
+        `/?category=${encodeURIComponent(category)}&subcategory=${encodeURIComponent(sub)}`,
+        { scroll: false }
+      );
     }
   }
 
@@ -76,7 +92,18 @@ export function StoreFront({ products }: { products: Product[] }) {
         </div>
       </div>
 
-      {categories.length > 1 && (
+      {tag !== 'All' && (
+        <div className="mb-6 flex items-center gap-2">
+          <span className="rounded-full bg-signal px-4 py-1.5 text-sm font-bold text-ink">
+            {TAG_LABELS[tag as Exclude<ProductTag, 'none'>] || tag}
+          </span>
+          <button onClick={clearTag} className="text-sm text-ash hover:text-signal">
+            Clear ×
+          </button>
+        </div>
+      )}
+
+      {tag === 'All' && categories.length > 1 && (
         <div className="mb-3 flex flex-wrap gap-2">
           {categories.map((cat) => (
             <button
@@ -94,7 +121,7 @@ export function StoreFront({ products }: { products: Product[] }) {
         </div>
       )}
 
-      {subcategories.length > 0 && (
+      {tag === 'All' && subcategories.length > 0 && (
         <div className="mb-8 flex flex-wrap gap-2">
           <button
             onClick={() => selectSubcategory('All')}
