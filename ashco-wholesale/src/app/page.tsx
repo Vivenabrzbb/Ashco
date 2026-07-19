@@ -30,7 +30,7 @@ export default async function HomePage() {
           </h1>
         </div>
       </section>
-
+       <TrendingSection products={list} />
       <section className="px-6 py-16">
         <div className="mx-auto max-w-6xl">
           <Suspense fallback={null}>
