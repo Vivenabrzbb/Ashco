@@ -46,45 +46,45 @@ export function ProductCard({ product }: { product: Product }) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 p-5">
+      <div className="flex flex-1 flex-col gap-1.5 p-3 sm:gap-2 sm:p-5">
         <span className="text-xs font-medium uppercase tracking-wide text-ash">
           {product.category || 'Uncategorised'}
           {product.subcategory ? ` · ${product.subcategory}` : ''}
         </span>
-        <h3 className="-mt-1 font-display text-lg font-bold text-paper">{product.name}</h3>
-        <p className="flex-1 text-sm leading-relaxed text-ash">{product.description}</p>
+        <h3 className="-mt-1 font-display text-sm font-bold text-paper sm:text-lg">{product.name}</h3>
+        <p className="hidden flex-1 text-sm leading-relaxed text-ash sm:block">{product.description}</p>
 
-        <div className="mt-3 flex items-center justify-between">
-          <span className="font-display text-xl font-extrabold text-signal">
+        <div className="mt-1 flex items-center justify-between gap-2 sm:mt-3">
+          <span className="font-display text-base font-extrabold text-signal sm:text-xl">
             {formatGBP(product.price_pence)}
           </span>
 
           {!product.in_stock ? (
-            <span className="rounded-full bg-line px-4 py-2 text-sm font-bold text-ash">
+            <span className="rounded-full bg-line px-3 py-1.5 text-xs font-bold text-ash sm:px-4 sm:py-2 sm:text-sm">
               Unavailable
             </span>
           ) : quantity === 0 ? (
             <button
               onClick={handleAdd}
-              className="rounded-full bg-signal px-4 py-2 text-sm font-bold text-ink transition hover:bg-white"
+              className="touch-manipulation select-none rounded-full bg-signal px-3 py-1.5 text-xs font-bold text-ink transition hover:bg-white active:scale-95 sm:px-4 sm:py-2 sm:text-sm"
             >
               Add to cart
             </button>
           ) : (
-            <div className="flex items-center gap-3 rounded-full border border-signal bg-signal/10 px-1 py-1">
+            <div className="flex touch-manipulation select-none items-center gap-2 rounded-full border border-signal bg-signal/10 px-1 py-1 sm:gap-3">
               <button
                 onClick={() => setQuantity(product.id, quantity - 1)}
-                className="flex h-7 w-7 items-center justify-center rounded-full text-lg font-bold text-signal hover:bg-signal/20"
+                className="flex h-7 w-7 items-center justify-center rounded-full text-base font-bold text-signal hover:bg-signal/20 active:scale-90 sm:h-8 sm:w-8 sm:text-lg"
                 aria-label={`Decrease quantity of ${product.name}`}
               >
                 −
               </button>
-              <span className="min-w-[1.25rem] text-center font-display font-bold text-paper">
+              <span className="min-w-[1rem] text-center font-display text-sm font-bold text-paper sm:min-w-[1.25rem] sm:text-base">
                 {quantity}
               </span>
               <button
                 onClick={() => setQuantity(product.id, quantity + 1)}
-                className="flex h-7 w-7 items-center justify-center rounded-full text-lg font-bold text-signal hover:bg-signal/20"
+                className="flex h-7 w-7 items-center justify-center rounded-full text-base font-bold text-signal hover:bg-signal/20 active:scale-90 sm:h-8 sm:w-8 sm:text-lg"
                 aria-label={`Increase quantity of ${product.name}`}
               >
                 +
