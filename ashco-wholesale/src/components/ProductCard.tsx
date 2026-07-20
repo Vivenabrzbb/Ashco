@@ -18,8 +18,8 @@ export function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-panel transition hover:border-signal/50">
-      <div className="relative aspect-square w-full overflow-hidden bg-line">
+    <div className="group flex flex-col rounded-2xl border border-line bg-panel transition hover:border-signal/50">
+      <div className="relative aspect-square w-full overflow-hidden rounded-t-2xl bg-line">
         {product.image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -54,27 +54,27 @@ export function ProductCard({ product }: { product: Product }) {
         <h3 className="-mt-1 font-display text-sm font-bold text-paper sm:text-lg">{product.name}</h3>
         <p className="hidden flex-1 text-sm leading-relaxed text-ash sm:block">{product.description}</p>
 
-        <div className="mt-1 flex items-center justify-between gap-2 sm:mt-3">
+        <div className="mt-1 flex flex-col gap-1.5 sm:mt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
           <span className="font-display text-base font-extrabold text-signal sm:text-xl">
             {formatGBP(product.price_pence)}
           </span>
 
           {!product.in_stock ? (
-            <span className="rounded-full bg-line px-3 py-1.5 text-xs font-bold text-ash sm:px-4 sm:py-2 sm:text-sm">
+            <span className="w-fit rounded-full bg-line px-3 py-1.5 text-xs font-bold text-ash sm:px-4 sm:py-2 sm:text-sm">
               Unavailable
             </span>
           ) : quantity === 0 ? (
             <button
               onClick={handleAdd}
-              className="touch-manipulation select-none rounded-full bg-signal px-3 py-1.5 text-xs font-bold text-ink transition hover:bg-white active:scale-95 sm:px-4 sm:py-2 sm:text-sm"
+              className="w-full touch-manipulation select-none rounded-full bg-signal px-3 py-2 text-xs font-bold text-ink transition hover:bg-white active:scale-95 sm:w-auto sm:px-4 sm:py-2 sm:text-sm"
             >
               Add to cart
             </button>
           ) : (
-            <div className="flex touch-manipulation select-none items-center gap-2 rounded-full border border-signal bg-signal/10 px-1 py-1 sm:gap-3">
+            <div className="flex w-full touch-manipulation select-none items-center justify-between gap-1 rounded-full border border-signal bg-signal/10 px-1 py-1 sm:w-auto sm:justify-center sm:gap-3">
               <button
                 onClick={() => setQuantity(product.id, quantity - 1)}
-                className="flex h-7 w-7 items-center justify-center rounded-full text-base font-bold text-signal hover:bg-signal/20 active:scale-90 sm:h-8 sm:w-8 sm:text-lg"
+                className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-base font-bold text-signal hover:bg-signal/20 active:scale-90 sm:h-8 sm:w-8 sm:text-lg"
                 aria-label={`Decrease quantity of ${product.name}`}
               >
                 −
@@ -84,7 +84,7 @@ export function ProductCard({ product }: { product: Product }) {
               </span>
               <button
                 onClick={() => setQuantity(product.id, quantity + 1)}
-                className="flex h-7 w-7 items-center justify-center rounded-full text-base font-bold text-signal hover:bg-signal/20 active:scale-90 sm:h-8 sm:w-8 sm:text-lg"
+                className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-base font-bold text-signal hover:bg-signal/20 active:scale-90 sm:h-8 sm:w-8 sm:text-lg"
                 aria-label={`Increase quantity of ${product.name}`}
               >
                 +
