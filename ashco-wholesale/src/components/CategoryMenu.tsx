@@ -3,12 +3,16 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { TAG_LABELS, type ProductTag } from '@/lib/types';
 
 type CategoryTree = Record<string, Set<string>>;
+
+const QUICK_LINK_TAGS: Exclude<ProductTag, 'none'>[] = ['trending', 'offer', 'clearance', 'new'];
 
 export function CategoryMenu() {
   const [open, setOpen] = useState(false);
   const [tree, setTree] = useState<CategoryTree>({});
+  const [availableTags, setAvailableTags] = useState<Set<string>>(new Set());
   const [expanded, setExpanded] = useState<string | null>(null);
   const router = useRouter();
 
@@ -16,14 +20,17 @@ export function CategoryMenu() {
     if (!open) return;
     (async () => {
       const supabase = createClient();
-      const { data } = await supabase.from('products').select('category, subcategory');
+      const { data } = await supabase.from('products').select('category, subcategory, tag');
       const next: CategoryTree = {};
+      const tags = new Set<string>();
       (data || []).forEach((row) => {
         const cat = row.category || 'Uncategorised';
         if (!next[cat]) next[cat] = new Set();
         if (row.subcategory) next[cat].add(row.subcategory);
+        if (row.tag && row.tag !== 'none') tags.add(row.tag);
       });
       setTree(next);
+      setAvailableTags(tags);
     })();
   }, [open]);
 
@@ -41,6 +48,7 @@ export function CategoryMenu() {
   }
 
   const categories = Object.keys(tree).sort();
+  const quickLinks = QUICK_LINK_TAGS.filter((t) => availableTags.has(t));
 
   return (
     <>
@@ -76,42 +84,84 @@ export function CategoryMenu() {
               </button>
             </div>
 
-            <div className="flex-1 px-2 py-3">
-              {categories.length === 0 && (
-                <p className="px-4 py-6 text-sm text-ash">No categories yet.</p>
-              )}
-              {categories.map((cat) => {
-                const subs = Array.from(tree[cat]).sort();
-                const isExpanded = expanded === cat;
-                return (
-                  <div key={cat} className="border-b border-line last:border-b-0">
+            <div className="flex-1 px-4 py-4">
+              {quickLinks.length > 0 && (
+                <div className="mb-4 grid grid-cols-2 gap-2">
+                  {quickLinks.map((tag) => (
                     <button
-                      onClick={() => (subs.length > 0 ? setExpanded(isExpanded ? null : cat) : goTo(cat))}
-                      className="flex w-full items-center justify-between px-4 py-4 text-left font-display font-bold text-paper hover:text-signal"
+                      key={tag}
+                      onClick={() => goToTag(tag)}
+                      className="rounded-xl border border-signal bg-signal/5 px-3 py-3 text-sm font-bold text-signal hover:bg-signal hover:text-ink"
                     >
-                      <span onClick={(e) => { e.stopPropagation(); goTo(cat); }}>{cat}</span>
-                      {subs.length > 0 && (
-                        <span className={`text-sm transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
-                          ▾
-                        </span>
-                      )}
+                      {TAG_LABELS[tag]}
                     </button>
-                    {isExpanded && subs.length > 0 && (
-                      <div className="pb-3 pl-6">
-                        {subs.map((sub) => (
-                          <button
-                            key={sub}
-                            onClick={() => goTo(cat, sub)}
-                            className="block w-full px-2 py-2 text-left text-sm text-ash hover:text-signal"
+                  ))}
+                </div>
+              )}
+
+              {categories.length === 0 && (
+                <p className="rounded-xl bg-panel px-4 py-6 text-center text-sm text-ash">
+                  No categories yet — add products with a category in /admin.
+                </p>
+              )}
+
+              <div className="space-y-2">
+                {categories.map((cat) => {
+                  const subs = Array.from(tree[cat]).sort();
+                  const isExpanded = expanded === cat;
+                  return (
+                    <div
+                      key={cat}
+                      className={`overflow-hidden rounded-xl border transition ${
+                        isExpanded ? 'border-signal bg-signal/5' : 'border-line bg-panel'
+                      }`}
+                    >
+                      <button
+                        onClick={() => {
+                          if (subs.length > 0) {
+                            setExpanded(isExpanded ? null : cat);
+                          } else {
+                            goTo(cat);
+                          }
+                        }}
+                        className="flex w-full items-center justify-between px-4 py-4 text-left"
+                      >
+                        <span
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            goTo(cat);
+                          }}
+                          className="font-display text-base font-bold text-paper hover:text-signal"
+                        >
+                          {cat}
+                        </span>
+                        {subs.length > 0 && (
+                          <span
+                            className={`text-sm text-ash transition-transform ${
+                              isExpanded ? 'rotate-180 text-signal' : ''
+                            }`}
                           >
-                            {sub}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                            ▾
+                          </span>
+                        )}
+                      </button>
+                      {isExpanded && subs.length > 0 && (
+                        <div className="space-y-1 px-3 pb-3">
+                          {subs.map((sub) => (
+                            <button
+                              key={sub}
+                              onClick={() => goTo(cat, sub)}
+                              className="block w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium text-ash hover:bg-ink hover:text-signal"
+                            >
+                              {sub}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
