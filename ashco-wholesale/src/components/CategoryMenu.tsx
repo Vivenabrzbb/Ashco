@@ -34,6 +34,19 @@ export function CategoryMenu() {
     })();
   }, [open]);
 
+  // Prevent the page behind the drawer from scrolling while it's open —
+  // avoids the underlying page "showing through" below the drawer, especially
+  // noticeable in full-page screenshots or on mobile browsers.
+  useEffect(() => {
+    if (open) {
+      const original = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = original;
+      };
+    }
+  }, [open]);
+
   function goTo(category: string, subcategory?: string) {
     const params = new URLSearchParams();
     params.set('category', category);
@@ -66,13 +79,13 @@ export function CategoryMenu() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex">
+        <div className="fixed inset-0 z-50 flex" style={{ height: '100dvh' }}>
           <div
             className="absolute inset-0 bg-paper/40"
             onClick={() => setOpen(false)}
             aria-hidden="true"
           />
-          <div className="relative flex h-full w-full max-w-sm flex-col overflow-y-auto bg-ink shadow-xl">
+          <div className="relative flex h-full w-full max-w-sm flex-col overflow-y-auto overscroll-contain bg-ink shadow-xl">
             <div className="flex items-center justify-between border-b border-line px-6 py-5">
               <span className="font-display text-lg font-bold text-paper">Categories</span>
               <button
