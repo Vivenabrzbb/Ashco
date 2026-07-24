@@ -171,7 +171,7 @@ export default function CheckoutPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-full bg-signal py-4 text-center font-display font-bold text-ink transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-full bg-signal py-4 text-center font-display font-bold text-ink transition hover:bg-signalDim disabled:cursor-not-allowed disabled:opacity-60"
           >
             {submitting ? 'Placing order…' : 'Place order & generate invoice'}
           </button>
@@ -179,7 +179,7 @@ export default function CheckoutPage() {
       </div>
 
       <style>{`
-       .input {
+        .input {
           width: 100%;
           background: #FFFFFF;
           border: 1px solid #E4E1D8;
@@ -187,7 +187,6 @@ export default function CheckoutPage() {
           padding: 0.75rem 1rem;
           color: #141414;
         }
-        
         .input:focus {
           outline: 2px solid #FF6000;
           border-color: #FF6000;
