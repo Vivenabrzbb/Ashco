@@ -66,7 +66,7 @@ export function ProductCard({ product }: { product: Product }) {
           ) : quantity === 0 ? (
             <button
               onClick={handleAdd}
-              className="w-full touch-manipulation select-none rounded-full bg-signal px-3 py-2 text-xs font-bold text-ink transition hover:bg-white active:scale-95 sm:w-auto sm:px-4 sm:py-2 sm:text-sm"
+              className="w-full touch-manipulation select-none rounded-full bg-signal px-3 py-2 text-xs font-bold text-ink transition hover:bg-signalDim active:scale-95 sm:w-auto sm:px-4 sm:py-2 sm:text-sm"
             >
               Add to cart
             </button>
