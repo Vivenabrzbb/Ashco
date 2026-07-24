@@ -16,17 +16,26 @@ export default function AdminLoginPage() {
     setLoading(true);
     setError(null);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
-      setError(error.message);
+      if (error) {
+        setError(error.message);
+        return;
+      }
+
+      router.push('/admin');
+      router.refresh();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? `Could not reach Supabase: ${err.message}`
+          : 'Could not reach Supabase. Check your connection and try again.'
+      );
+    } finally {
       setLoading(false);
-      return;
     }
-
-    router.push('/admin');
-    router.refresh();
   }
 
   return (
@@ -66,7 +75,7 @@ export default function AdminLoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-full bg-signal py-3 font-display font-bold text-ink transition hover:bg-white disabled:opacity-60"
+          className="w-full rounded-full bg-signal py-3 font-display font-bold text-ink transition hover:bg-signalDim disabled:opacity-60"
         >
           {loading ? 'Signing in…' : 'Sign in'}
         </button>
