@@ -79,7 +79,7 @@ export function TrendingSection({ products }: { products: Product[] }) {
                       price_pence: current.price_pence,
                     })
                   }
-                  className="rounded-full bg-signal px-5 py-2.5 text-sm font-bold text-ink transition hover:bg-white"
+                 className="rounded-full bg-signal px-5 py-2.5 text-sm font-bold text-ink transition hover:bg-signalDim"
                 >
                   Add to cart
                 </button>
