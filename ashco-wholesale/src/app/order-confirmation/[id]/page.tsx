@@ -63,14 +63,12 @@ export default async function OrderConfirmationPage({
           </div>
         </div>
 
-        <p className="mt-8">
-          <Link
-            href={`/api/invoice/${typedOrder.id}`}
-            className="inline-flex items-center gap-2 rounded-full bg-signal px-6 py-3 font-display font-bold text-ink transition hover:bg-white"
-          >
-            Download invoice (PDF)
-          </Link>
-        </p>
+        
+          href={`/api/invoice/${typedOrder.id}`}
+          className="mt-8 inline-flex items-center gap-2 rounded-full bg-signal px-6 py-3 font-display font-bold text-ink transition hover:bg-signalDim"
+        >
+          Download invoice (PDF)
+        </a>
 
         <div>
           <Link href="/" className="mt-6 inline-block font-bold text-signal hover:underline">
