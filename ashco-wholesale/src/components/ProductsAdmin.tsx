@@ -272,7 +272,7 @@ export function ProductsAdmin({ initialProducts }: { initialProducts: Product[] 
             <button
               type="submit"
               disabled={saving || uploading}
-              className="flex-1 rounded-full bg-signal py-2.5 font-display font-bold text-ink hover:bg-white disabled:opacity-60"
+              className="flex-1 rounded-full bg-signal py-2.5 font-display font-bold text-ink hover:bg-signalDim disabled:opacity-60"
             >
               {saving ? 'Saving…' : editingId ? 'Save changes' : 'Add product'}
             </button>
