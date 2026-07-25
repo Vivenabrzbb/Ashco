@@ -73,7 +73,10 @@ export async function generateInvoicePdf(order: Order, items: OrderItem[]): Prom
 
   for (const item of items) {
     const lineTotal = item.unit_price_pence * item.quantity;
-    page.drawText(truncate(item.product_name, 48), { x: margin, y, size: 10, font, color: INK });
+    const label = item.vat_exempt
+      ? `${truncate(item.product_name, 40)} (VAT free)`
+      : truncate(item.product_name, 48);
+    page.drawText(label, { x: margin, y, size: 10, font, color: INK });
     page.drawText(String(item.quantity), { x: width - margin - 216, y, size: 10, font, color: INK });
     page.drawText(formatGBP(item.unit_price_pence), {
       x: width - margin - 160,
@@ -109,8 +112,18 @@ export async function generateInvoicePdf(order: Order, items: OrderItem[]): Prom
     color: GREY,
   });
 
-  page.drawText('Sub-Total', { x: width - margin - 190, y, size: 10, font, color: GREY });
+  page.drawText('Sub-Total (net)', { x: width - margin - 190, y, size: 10, font, color: GREY });
   page.drawText(formatGBP(order.subtotal_pence), {
+    x: width - margin - 70,
+    y,
+    size: 10,
+    font,
+    color: INK,
+  });
+  y -= 18;
+
+  page.drawText('VAT (20%)', { x: width - margin - 190, y, size: 10, font, color: GREY });
+  page.drawText(formatGBP(order.vat_pence), {
     x: width - margin - 70,
     y,
     size: 10,
@@ -125,7 +138,7 @@ export async function generateInvoicePdf(order: Order, items: OrderItem[]): Prom
     color: LIGHT_LINE,
   });
   page.drawText('Total', { x: width - margin - 190, y, size: 12, font: bold, color: INK });
-  page.drawText(formatGBP(order.subtotal_pence), {
+  page.drawText(formatGBP(order.subtotal_pence + order.vat_pence), {
     x: width - margin - 70,
     y,
     size: 12,
