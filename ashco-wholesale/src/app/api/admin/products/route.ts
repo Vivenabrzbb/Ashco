@@ -20,6 +20,7 @@ export async function POST(request: Request) {
       tag: body.tag || 'none',
       category: body.category || 'Uncategorised',
       subcategory: body.subcategory || null,
+      vat_exempt: body.vat_exempt ?? false,
     })
     .select()
     .single();
