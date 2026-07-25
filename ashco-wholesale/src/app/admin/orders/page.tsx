@@ -57,6 +57,7 @@ export default async function AdminOrdersPage() {
                     <div key={item.id} className="flex justify-between py-2 text-sm">
                       <span className="text-ash">
                         {item.quantity} × {item.product_name}
+                        {item.vat_exempt ? ' (VAT free)' : ''}
                       </span>
                       <span className="text-paper">
                         {formatGBP(item.unit_price_pence * item.quantity)}
@@ -65,13 +66,23 @@ export default async function AdminOrdersPage() {
                   ))}
                 </div>
 
-                <div className="mt-3 flex justify-between border-t border-line pt-3">
-                  <span className="text-sm text-ash">
-                    {new Date(order.created_at).toLocaleString('en-GB')}
-                  </span>
-                  <span className="font-display font-bold text-signal">
-                    {formatGBP(order.subtotal_pence)}
-                  </span>
+                <div className="mt-3 space-y-1 border-t border-line pt-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-ash">Subtotal</span>
+                    <span className="text-paper">{formatGBP(order.subtotal_pence)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-ash">VAT</span>
+                    <span className="text-paper">{formatGBP(order.vat_pence)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-ash">
+                      {new Date(order.created_at).toLocaleString('en-GB')}
+                    </span>
+                    <span className="font-display font-bold text-signal">
+                      {formatGBP(order.subtotal_pence + order.vat_pence)}
+                    </span>
+                  </div>
                 </div>
               </div>
             );
