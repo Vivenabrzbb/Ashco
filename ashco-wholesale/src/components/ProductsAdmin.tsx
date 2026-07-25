@@ -19,6 +19,7 @@ const emptyForm = {
   tag: 'none' as ProductTag,
   category: '',
   subcategory: '',
+  vat_exempt: false,
 };
 
 export function ProductsAdmin({ initialProducts }: { initialProducts: Product[] }) {
@@ -40,6 +41,7 @@ export function ProductsAdmin({ initialProducts }: { initialProducts: Product[] 
       tag: product.tag || 'none',
       category: product.category || '',
       subcategory: product.subcategory || '',
+      vat_exempt: product.vat_exempt || false,
     });
   }
 
@@ -92,6 +94,7 @@ export function ProductsAdmin({ initialProducts }: { initialProducts: Product[] 
       tag: form.tag,
       category: form.category.trim() || 'Uncategorised',
       subcategory: form.subcategory.trim() || null,
+      vat_exempt: form.vat_exempt,
     };
 
     const url = editingId ? `/api/admin/products/${editingId}` : '/api/admin/products';
@@ -247,6 +250,16 @@ export function ProductsAdmin({ initialProducts }: { initialProducts: Product[] 
             <span className="text-sm text-ash">In stock</span>
           </label>
 
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={form.vat_exempt}
+              onChange={(e) => setForm((p) => ({ ...p, vat_exempt: e.target.checked }))}
+              className="h-4 w-4 accent-signal"
+            />
+            <span className="text-sm text-ash">VAT free (no VAT charged on this product)</span>
+          </label>
+
           <label className="block">
             <span className="mb-1 block text-sm text-ash">Badge</span>
             <select
@@ -311,6 +324,7 @@ export function ProductsAdmin({ initialProducts }: { initialProducts: Product[] 
                 <p className="text-sm text-ash">
                   {formatGBP(product.price_pence)} · {product.category || 'Uncategorised'}
                   {product.subcategory ? ` / ${product.subcategory}` : ''}
+                  {product.vat_exempt ? ' · VAT free' : ''}
                 </p>
               </div>
               <button
