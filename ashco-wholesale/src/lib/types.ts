@@ -7,6 +7,8 @@ export const TAG_LABELS: Record<Exclude<ProductTag, 'none'>, string> = {
   offer: 'Offer',
 };
 
+// Suggested categories shown in the admin dropdown/autocomplete — not a hard limit,
+// you can type any category name and it'll be remembered.
 export const SUGGESTED_CATEGORIES = [
   'Drinks',
   'Soft Drinks',
@@ -23,6 +25,8 @@ export const SUGGESTED_CATEGORIES = [
   'Pet Care',
 ];
 
+// Optional suggested sub-categories per category, shown in admin once a category is picked.
+// Purely a convenience list — any subcategory text is allowed, this just speeds up entry.
 export const SUGGESTED_SUBCATEGORIES: Record<string, string[]> = {
   Drinks: ['Carbonates', 'Energy Drinks', 'Milkshakes', 'Sports & Isotonic', 'Water', 'Juice'],
   'Soft Drinks': ['Coca-Cola', 'Pepsi', 'Energy Drinks', 'Water', 'Juice'],
@@ -38,6 +42,9 @@ export const SUGGESTED_SUBCATEGORIES: Record<string, string[]> = {
   Bakery: ['Bread', 'Cakes', 'Pastries'],
 };
 
+// UK standard VAT rate. Change this one number if the rate ever changes.
+export const VAT_RATE = 0.2;
+
 export type Product = {
   id: string;
   name: string;
@@ -48,6 +55,7 @@ export type Product = {
   tag: ProductTag;
   category: string;
   subcategory: string | null;
+  vat_exempt: boolean;
   created_at: string;
 };
 
@@ -81,6 +89,7 @@ export type Order = {
   postcode: string;
   status: string;
   subtotal_pence: number;
+  vat_pence: number;
   created_at: string;
 };
 
@@ -91,6 +100,8 @@ export type OrderItem = {
   product_name: string;
   unit_price_pence: number;
   quantity: number;
+  vat_pence: number;
+  vat_exempt: boolean;
 };
 
 export function formatGBP(pence: number): string {
@@ -100,6 +111,7 @@ export function formatGBP(pence: number): string {
   }).format(pence / 100);
 }
 
+// Very light UK postcode sanity check (not exhaustive, just catches typos)
 export function isLikelyUkPostcode(value: string): boolean {
   const re = /^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/i;
   return re.test(value.trim());
