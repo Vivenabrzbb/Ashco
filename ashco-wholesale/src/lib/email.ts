@@ -17,7 +17,9 @@ export async function sendInvoiceEmails(order: Order, items: OrderItem[], pdfByt
     .map(
       (item) =>
         `<tr>
-          <td style="padding:8px 0;color:#0A0A0A;">${escapeHtml(item.product_name)}</td>
+          <td style="padding:8px 0;color:#0A0A0A;">${escapeHtml(item.product_name)}${
+          item.vat_exempt ? ' <span style="color:#888;font-size:11px;">(VAT free)</span>' : ''
+        }</td>
           <td style="padding:8px 0;text-align:center;color:#0A0A0A;">${item.quantity}</td>
           <td style="padding:8px 0;text-align:right;color:#0A0A0A;">${formatGBP(
             item.unit_price_pence * item.quantity
@@ -25,6 +27,18 @@ export async function sendInvoiceEmails(order: Order, items: OrderItem[], pdfByt
         </tr>`
     )
     .join('');
+
+  const totalsHtml = `
+    <p style="text-align:right;color:#444;margin:4px 0;">
+      Subtotal: ${formatGBP(order.subtotal_pence)}
+    </p>
+    <p style="text-align:right;color:#444;margin:4px 0;">
+      VAT: ${formatGBP(order.vat_pence)}
+    </p>
+    <p style="text-align:right;font-size:16px;color:#FF6000;font-weight:bold;margin:4px 0;">
+      Total: ${formatGBP(order.subtotal_pence + order.vat_pence)}
+    </p>
+  `;
 
   const customerHtml = `
     <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;">
@@ -41,9 +55,7 @@ export async function sendInvoiceEmails(order: Order, items: OrderItem[], pdfByt
         </thead>
         <tbody>${itemsHtml}</tbody>
       </table>
-      <p style="text-align:right;font-size:16px;color:#FF6000;font-weight:bold;">
-        Subtotal: ${formatGBP(order.subtotal_pence)}
-      </p>
+      ${totalsHtml}
       <p style="color:#444;">Delivery address:<br/>
       ${escapeHtml(order.address_line1)}<br/>
       ${order.address_line2 ? escapeHtml(order.address_line2) + '<br/>' : ''}
@@ -69,14 +81,12 @@ export async function sendInvoiceEmails(order: Order, items: OrderItem[], pdfByt
         </thead>
         <tbody>${itemsHtml}</tbody>
       </table>
-      <p style="text-align:right;font-size:16px;color:#FF6000;font-weight:bold;">
-        Subtotal: ${formatGBP(order.subtotal_pence)}
-      </p>
+      ${totalsHtml}
       <p style="color:#888;font-size:12px;">Contact the customer to confirm the order and take payment.</p>
     </div>
   `;
 
-  await Promise.all([
+  const [customerResult, ownerResult] = await Promise.all([
     resend.emails.send({
       from: FROM_ADDRESS,
       to: order.customer_email,
@@ -92,6 +102,16 @@ export async function sendInvoiceEmails(order: Order, items: OrderItem[], pdfByt
       attachments: [attachment],
     }),
   ]);
+
+  // The Resend SDK does NOT throw for rejected sends (bad domain, invalid key, etc.) —
+  // it resolves normally with an `error` field. We have to check it explicitly or failures
+  // go completely silent.
+  if (customerResult.error) {
+    throw new Error(`Customer email failed: ${JSON.stringify(customerResult.error)}`);
+  }
+  if (ownerResult.error) {
+    throw new Error(`Owner notification email failed: ${JSON.stringify(ownerResult.error)}`);
+  }
 }
 
 function escapeHtml(input: string): string {
