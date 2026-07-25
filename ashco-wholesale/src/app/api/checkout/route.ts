@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { generateInvoicePdf } from '@/lib/pdf';
 import { sendInvoiceEmails } from '@/lib/email';
-import { isLikelyUkPostcode, type CheckoutPayload, type Order, type OrderItem } from '@/lib/types';
+import { isLikelyUkPostcode, VAT_RATE, type CheckoutPayload, type Order, type OrderItem } from '@/lib/types';
 
 export async function POST(request: Request) {
   const body: CheckoutPayload = await request.json();
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
   const productIds = body.items.map((i) => i.product_id);
   const { data: products, error: productsError } = await supabase
     .from('products')
-    .select('id, name, price_pence, in_stock')
+    .select('id, name, price_pence, in_stock, vat_exempt')
     .in('id', productIds);
 
   if (productsError || !products || products.length === 0) {
@@ -37,11 +37,16 @@ export async function POST(request: Request) {
   const lineItems = body.items.map((item) => {
     const product = products.find((p) => p.id === item.product_id);
     if (!product) throw new Error('Product not found');
+    const lineNet = product.price_pence * item.quantity;
+    const vat_exempt = product.vat_exempt ?? false;
+    const vat_pence = vat_exempt ? 0 : Math.round(lineNet * VAT_RATE);
     return {
       product_id: product.id,
       product_name: product.name,
       unit_price_pence: product.price_pence,
       quantity: item.quantity,
+      vat_exempt,
+      vat_pence,
     };
   });
 
@@ -57,6 +62,7 @@ export async function POST(request: Request) {
   }
 
   const subtotal_pence = lineItems.reduce((sum, li) => sum + li.unit_price_pence * li.quantity, 0);
+  const vat_pence = lineItems.reduce((sum, li) => sum + li.vat_pence, 0);
 
   // --- Generate a human-readable invoice number ---------------------------
   const { data: seqData, error: seqError } = await supabase.rpc('nextval_invoice_number');
@@ -81,6 +87,7 @@ export async function POST(request: Request) {
       city: body.city.trim(),
       postcode: body.postcode.trim().toUpperCase(),
       subtotal_pence,
+      vat_pence,
       status: 'pending',
     })
     .select()
