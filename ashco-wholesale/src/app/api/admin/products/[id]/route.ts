@@ -21,6 +21,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       tag: body.tag || 'none',
       category: body.category || 'Uncategorised',
       subcategory: body.subcategory || null,
+      vat_exempt: body.vat_exempt ?? false,
     })
     .eq('id', id)
     .select()
