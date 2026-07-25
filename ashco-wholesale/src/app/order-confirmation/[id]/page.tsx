@@ -48,6 +48,7 @@ export default async function OrderConfirmationPage({
               <div key={item.id} className="flex justify-between text-sm">
                 <span className="text-ash">
                   {item.quantity} × {item.product_name}
+                  {item.vat_exempt ? ' (VAT free)' : ''}
                 </span>
                 <span className="text-paper">
                   {formatGBP(item.unit_price_pence * item.quantity)}
@@ -55,11 +56,21 @@ export default async function OrderConfirmationPage({
               </div>
             ))}
           </div>
-          <div className="mt-4 flex justify-between border-t border-line pt-4">
-            <span className="font-display font-bold text-paper">Subtotal</span>
-            <span className="font-display font-bold text-signal">
-              {formatGBP(typedOrder.subtotal_pence)}
-            </span>
+          <div className="mt-4 space-y-1 border-t border-line pt-4">
+            <div className="flex justify-between text-sm">
+              <span className="text-ash">Subtotal</span>
+              <span className="text-paper">{formatGBP(typedOrder.subtotal_pence)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-ash">VAT</span>
+              <span className="text-paper">{formatGBP(typedOrder.vat_pence)}</span>
+            </div>
+            <div className="flex justify-between pt-1">
+              <span className="font-display font-bold text-paper">Total</span>
+              <span className="font-display font-bold text-signal">
+                {formatGBP(typedOrder.subtotal_pence + typedOrder.vat_pence)}
+              </span>
+            </div>
           </div>
         </div>
 
