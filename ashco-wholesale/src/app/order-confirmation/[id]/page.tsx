@@ -133,7 +133,7 @@ export default async function OrderConfirmationPage({
             href="/"
             className="mt-6 inline-block font-bold text-signal hover:underline"
           >
-            ← Back to stock
+            ← Back to stock 
           </Link>
         </div>
       </div>
