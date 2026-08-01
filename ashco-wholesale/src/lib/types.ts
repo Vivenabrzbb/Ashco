@@ -6,7 +6,14 @@ export const TAG_LABELS: Record<Exclude<ProductTag, 'none'>, string> = {
   new: 'New in',
   offer: 'Offer',
 };
+export type OrderStatus = 'pending' | 'confirmed' | 'paid' | 'cancelled';
 
+export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  pending: 'Pending',
+  confirmed: 'Confirmed',
+  paid: 'Paid',
+  cancelled: 'Cancelled',
+};
 // Suggested categories shown in the admin dropdown/autocomplete — not a hard limit,
 // you can type any category name and it'll be remembered.
 export const SUGGESTED_CATEGORIES = [
