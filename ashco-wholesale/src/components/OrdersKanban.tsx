@@ -378,13 +378,14 @@ export function OrdersKanban({
             </div>
 
             
-              href={`/api/invoice/${viewingOrder.id}`}
-              target="_blank"
-              rel="noreferrer"
-              className="block w-full rounded-full bg-signal py-2.5 text-center text-sm font-bold text-ink hover:bg-signalDim"
-            >
-              Download invoice (PDF)
-            </a>
+            <a
+  href={`/api/invoice/${viewingOrder.id}`}
+  target="_blank"
+  rel="noreferrer"
+  className="block w-full rounded-full bg-signal py-2.5 text-center text-sm font-bold text-ink hover:bg-signalDim"
+>
+  Download invoice (PDF)
+</a>
           </div>
         </div>
       )}
