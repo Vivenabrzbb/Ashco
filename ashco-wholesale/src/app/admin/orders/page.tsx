@@ -36,7 +36,10 @@ export default async function AdminOrdersPage() {
           No orders yet.
         </p>
       ) : (
-        <OrdersKanban initialOrders={typedOrders} itemsByOrder={itemsByOrder} />
+        <OrdersKanban
+  initialOrders={typedOrders}
+  initialItemsByOrder={itemsByOrder}
+/>
       )}
     </div>
   );
